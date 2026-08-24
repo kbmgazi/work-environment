@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Systems Research Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #0e1117;
+    --bg2: #151921;
+    --bg3: #1c2230;
+    --bg4: #232a3a;
+    --fg: #e8ecf4;
+    --fg2: #a0aabe;
+    --fg3: #6b7a94;
+    --accent: #00d4aa;
+    --accent2: #00b894;
+    --accent-dim: rgba(0,212,170,0.1);
+    --accent-dim2: rgba(0,212,170,0.05);
+    --orange: #f0923b;
+    --orange-dim: rgba(240,146,59,0.1);
+    --red: #ff6b6b;
+    --red-dim: rgba(255,107,107,0.1);
+    --blue: #5b9cf6;
+    --blue-dim: rgba(91,156,246,0.1);
+    --purple: #b07cff;
+    --purple-dim: rgba(176,124,255,0.1);
+    --yellow: #ffd43b;
+    --yellow-dim: rgba(255,212,59,0.1);
+    --border: #252d3f;
+    --border2: #2d3650;
+    --radius: 8px;
+    --radius2: 12px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -40%; left: -20%;
+    width: 70vw; height: 70vw;
+    background: radial-gradient(circle, rgba(0,212,170,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -30%; right: -15%;
+    width: 60vw; height: 60vw;
+    background: radial-gradient(circle, rgba(240,146,59,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; padding: 20px 24px 40px; }
+
+  /* Header */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 0 24px; border-bottom: 1px solid var(--border);
+    margin-bottom: 20px; flex-wrap: wrap; gap: 16px;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo-icon {
+    width: 44px; height: 44px; border-radius: var(--radius2);
+    background: linear-gradient(135deg, var(--accent), #00856b);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #fff; flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(0,212,170,0.25);
+  }
+  .header-title { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .header-sub { font-size: 13px; color: var(--fg3); margin-top: 2px; }
+  .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 16px; border-radius: var(--radius);
+    border: 1px solid var(--border2); background: var(--bg3);
+    color: var(--fg2); font-size: 13px; font-family: inherit;
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .btn:hover { background: var(--bg4); color: var(--fg); border-color: var(--fg3); }
+  .btn-accent {
+    background: var(--accent); color: #0e1117; border-color: var(--accent);
+    font-weight: 600;
+  }
+  .btn-accent:hover { background: var(--accent2); border-color: var(--accent2); color: #0e1117; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .stat-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: var(--radius);
+    background: var(--bg2); border: 1px solid var(--border);
+    font-size: 13px; color: var(--fg2);
+  }
+  .stat-chip .num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--fg); font-size: 15px; }
+  .stat-chip i { font-size: 12px; }
+
+  /* Sheet tabs */
+  .tabs-container {
+    display: flex; gap: 2px; margin-bottom: 0;
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto; padding-bottom: 0;
+    scrollbar-width: none;
+  }
+  .tabs-container::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 11px 18px; font-size: 13px; font-weight: 500;
+    color: var(--fg3); cursor: pointer; border: none; background: none;
+    border-bottom: 2px solid transparent; margin-bottom: -2px;
+    transition: all 0.2s; white-space: nowrap; font-family: inherit;
+    position: relative;
+  }
+  .tab:hover { color: var(--fg2); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab .tab-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 18px; border-radius: 10px;
+    background: var(--bg4); font-size: 11px; font-weight: 600;
+    margin-left: 6px; padding: 0 5px;
+  }
+  .tab.active .tab-count { background: var(--accent-dim); color: var(--accent); }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 0; flex-wrap: wrap;
+  }
+  .search-box {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: var(--radius);
+    background: var(--bg2); border: 1px solid var(--border);
+    flex: 1; min-width: 200px; max-width: 400px;
+    transition: border-color 0.2s;
+  }
+  .search-box:focus-within { border-color: var(--accent); }
+  .search-box i { color: var(--fg3); font-size: 13px; }
+  .search-box input {
+    border: none; background: none; color: var(--fg);
+    font-size: 13px; font-family: inherit; outline: none; width: 100%;
+  }
+  .search-box input::placeholder { color: var(--fg3); }
+
+  .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-btn {
+    padding: 7px 13px; border-radius: 20px;
+    border: 1px solid var(--border); background: var(--bg2);
+    color: var(--fg3); font-size: 12px; cursor: pointer;
+    transition: all 0.2s; font-family: inherit;
+  }
+  .filter-btn:hover { border-color: var(--fg3); color: var(--fg2); }
+  .filter-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  /* Table */
+  .table-wrap {
+    border: 1px solid var(--border); border-radius: var(--radius2);
+    overflow: hidden; background: var(--bg2);
+  }
+  .table-scroll { overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+  .table-scroll::-webkit-scrollbar { height: 6px; }
+  .table-scroll::-webkit-scrollbar-track { background: transparent; }
+  .table-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  table { width: 100%; border-collapse: collapse; min-width: 700px; }
+  thead { background: var(--bg3); position: sticky; top: 0; z-index: 2; }
+  th {
+    padding: 12px 16px; text-align: left; font-size: 11px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--fg3); border-bottom: 1px solid var(--border);
+    cursor: pointer; user-select: none; transition: color 0.2s;
+    white-space: nowrap;
+  }
+  th:hover { color: var(--fg2); }
+  th .sort-icon { margin-left: 4px; font-size: 10px; opacity: 0.4; }
+  th.sorted .sort-icon { opacity: 1; color: var(--accent); }
+
+  td {
+    padding: 12px 16px; font-size: 13px; color: var(--fg2);
+    border-bottom: 1px solid var(--border); vertical-align: top;
+    line-height: 1.5;
+  }
+  tr { transition: background 0.15s; }
+  tbody tr:hover { background: var(--accent-dim2); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .cell-name {
+    color: var(--fg); font-weight: 600; font-size: 13.5px;
+  }
+  .cell-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    color: var(--accent); text-decoration: none; font-size: 12.5px;
+    transition: color 0.2s; word-break: break-all;
+  }
+  .cell-link:hover { color: #fff; text-decoration: underline; }
+  .cell-link i { font-size: 10px; flex-shrink: 0; }
+
+  /* Badges */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 20px; font-size: 11px;
+    font-weight: 600; white-space: nowrap;
+  }
+  .badge-accent { background: var(--accent-dim); color: var(--accent); }
+  .badge-orange { background: var(--orange-dim); color: var(--orange); }
+  .badge-red { background: var(--red-dim); color: var(--red); }
+  .badge-blue { background: var(--blue-dim); color: var(--blue); }
+  .badge-purple { background: var(--purple-dim); color: var(--purple); }
+  .badge-yellow { background: var(--yellow-dim); color: var(--yellow); }
+
+  /* Importance stars */
+  .stars { color: var(--yellow); font-size: 12px; letter-spacing: 1px; }
+
+  /* Notes cell */
+  .cell-notes { max-width: 360px; line-height: 1.6; }
+
+  /* Empty state */
+  .empty-state {
+    padding: 60px 20px; text-align: center; color: var(--fg3);
+  }
+  .empty-state i { font-size: 40px; margin-bottom: 16px; opacity: 0.3; }
+  .empty-state p { font-size: 14px; }
+
+  /* Footer */
+  .footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0; font-size: 12px; color: var(--fg3);
+    flex-wrap: wrap; gap: 8px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 30px; right: 30px;
+    padding: 14px 22px; border-radius: var(--radius);
+    background: var(--bg4); border: 1px solid var(--accent);
+    color: var(--accent); font-size: 13px; font-weight: 500;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    transform: translateY(100px); opacity: 0;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 100; display: flex; align-items: center; gap: 8px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Row number */
+  .row-num {
+    font-family: 'Space Grotesk', sans-serif; font-size: 12px;
+    color: var(--fg3); font-weight: 500; min-width: 24px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .app { padding: 12px 12px 30px; }
+    .header { padding: 14px 0 18px; }
+    .header-title { font-size: 18px; }
+    .search-box { max-width: none; min-width: 0; }
+    .toolbar { gap: 8px; }
+    .stats-bar { gap: 6px; }
+    .stat-chip { padding: 6px 10px; font-size: 12px; }
+    td, th { padding: 10px 12px; }
+  }
+
+  /* Subtle animation on load */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .table-wrap { animation: fadeUp 0.4s ease-out; }
+
+  /* Level indicator for research stack */
+  .level-bar {
+    display: flex; gap: 3px; align-items: center;
+  }
+  .level-seg {
+    width: 16px; height: 6px; border-radius: 3px;
+    background: var(--border2);
+  }
+  .level-seg.filled { background: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-icon"><i class="fas fa-database"></i></div>
+      <div>
+        <div class="header-title">Business Systems Research Hub</div>
+        <div class="header-sub">Bachelor of IT in Business Systems — Curated Resource Database</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn" onclick="exportCSV()" aria-label="Export as CSV">
+        <i class="fas fa-file-csv"></i> Export CSV
+      </button>
+      <button class="btn btn-accent" onclick="exportCurrentSheet()" aria-label="Export current sheet">
+        <i class="fas fa-download"></i> Export Sheet
+      </button>
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats-bar" id="statsBar"></div>
+
+  <!-- Tabs -->
+  <nav class="tabs-container" id="tabsContainer" role="tablist"></nav>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Search resources, topics, types..." aria-label="Search resources">
+    </div>
+    <div class="filter-group" id="filterGroup"></div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table id="dataTable" role="grid">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <i class="fas fa-search"></i>
+      <p>No resources match your search or filter.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span id="footerInfo">Showing 0 of 0 resources</span>
+    <span>Built for academic research — All links verified 2025</span>
+  </footer>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg"></span></div>
+
+<script>
+// ========== DATA ==========
+const sheets = {
+  "Academic Databases": {
+    icon: "fas fa-layer-group",
+    color: "accent",
+    columns: ["#", "Resource", "Type", "Best For", "URL"],
+    colKeys: ["num","name","type","bestFor","url"],
+    filters: ["All","Database","Search Engine","Technical"],
+    data: [
+      { name:"AIS eLibrary", type:"Database", bestFor:"Information Systems, MIS, digitalisation, IT/business", url:"https://aisel.aisnet.org/", importance:5 },
+      { name:"Google Scholar", type:"Search Engine", bestFor:"Finding papers, theses and books across all disciplines", url:"https://scholar.google.com/", importance:5 },
+      { name:"Scopus", type:"Database", bestFor:"High-quality academic research and citation analysis", url:"https://www.scopus.com/", importance:4 },
+      { name:"Web of Science", type:"Database", bestFor:"Peer-reviewed research and citation tracking", url:"https://www.webofscience.com/", importance:4 },
+      { name:"ScienceDirect", type:"Database", bestFor:"Information systems, business, technology", url:"https://www.sciencedirect.com/", importance:4 },
+      { name:"SpringerLink", type:"Database", bestFor:"Business systems, enterprise systems, IT reference works", url:"https://link.springer.com/", importance:4 },
+      { name:"IEEE Xplore", type:"Technical", bestFor:"IT systems, software, enterprise architecture", url:"https://ieeexplore.ieee.org/", importance:4 },
+      { name:"ACM Digital Library", type:"Technical", bestFor:"Software, information systems, databases, HCI", url:"https://dl.acm.org/", importance:4 },
+      { name:"JSTOR", type:"Database", bestFor:"Business, management, economics and historical IS research", url:"https://www.jstor.org/", importance:4 },
+      { name:"Emerald Insight", type:"Database", bestFor:"Information systems, business processes, management", url:"https://www.emerald.com/insight/", importance:3 },
+      { name:"Wiley Online Library", type:"Database", bestFor:"Information systems and business research", url:"https://onlinelibrary.wiley.com/", importance:3 },
+      { name:"Taylor & Francis Online", type:"Database", bestFor:"Information systems, management and digital transformation", url:"https://www.tandfonline.com/", importance:3 }
+    ]
+  },
+  "Tier 1 Journals": {
+    icon: "fas fa-award",
+    color: "yellow",
+    columns: ["#", "Journal", "Abbreviation", "Focus Area", "URL"],
+    colKeys: ["num","name","abbr","focus","url"],
+    filters: ["All","Core IS","Strategy","Management"],
+    data: [
+      { name:"MIS Quarterly", abbr:"MISQ", focus:"IT-based services, IT resource management, use and impact of IT, economic/organisational/societal implications of IT", url:"https://aisel.aisnet.org/misq/", importance:5, category:"Core IS" },
+      { name:"Information Systems Research", abbr:"ISR", focus:"Rigorous IS research, theory development, empirical studies", url:"https://pubsonline.informs.org/journal/isre", importance:5, category:"Core IS" },
+      { name:"Journal of the Association for Information Systems", abbr:"JAIS", focus:"Premier IS research across all sub-fields", url:"https://aisel.aisnet.org/jais/", importance:5, category:"Core IS" },
+      { name:"Journal of Management Information Systems", abbr:"JMIS", focus:"Management of IT, IS strategy, organisational IT", url:"https://www.jmis-web.org/", importance:5, category:"Management" },
+      { name:"European Journal of Information Systems", abbr:"EJIS", focus:"European IS research, IT in organisations, digital innovation", url:"https://www.tandfonline.com/toc/tejis20/current", importance:5, category:"Core IS" },
+      { name:"Information Systems Journal", abbr:"ISJ", focus:"IS development, implementation, use and management", url:"https://onlinelibrary.wiley.com/journal/13652575", importance:5, category:"Core IS" },
+      { name:"Journal of Strategic Information Systems", abbr:"JSIS", focus:"Strategic use of IT, digital transformation strategy", url:"https://www.sciencedirect.com/journal/the-journal-of-strategic-information-systems", importance:5, category:"Strategy" },
+      { name:"Journal of Information Technology", abbr:"JIT", focus:"IT innovation, digital business, technology adoption", url:"https://www.palgrave.com/journal/41265", importance:4, category:"Strategy" },
+      { name:"Information & Management", abbr:"I&M", focus:"IS management, IT impact on organisations", url:"https://www.sciencedirect.com/journal/information-and-management", importance:4, category:"Management" },
+      { name:"Decision Support Systems", abbr:"DSS", focus:"Decision support, AI in business, analytical systems", url:"https://www.sciencedirect.com/journal/decision-support-systems", importance:4, category:"Management" }
+    ]
+  },
+  "Business/IS Journals": {
+    icon: "fas fa-book-open",
+    color: "orange",
+    columns: ["#", "Journal", "Focus Area", "URL"],
+    colKeys: ["num","name","focus","url"],
+    filters: ["All","AIS Affiliated","Independent"],
+    data: [
+      { name:"Business & Information Systems Engineering", focus:"Business IS engineering, design science, enterprise systems", url:"https://link.springer.com/journal/40710", category:"AIS Affiliated", importance:4 },
+      { name:"Journal of Information Systems", focus:"IS auditing, security, accounting information systems", url:"https://www.tandfonline.com/toc/ujis20/current", category:"AIS Affiliated", importance:3 },
+      { name:"Journal of Information Technology", focus:"IT innovation, digital business, technology adoption", url:"https://www.palgrave.com/journal/41265", category:"AIS Affiliated", importance:4 },
+      { name:"European Journal of Information Systems", focus:"European IS research, digital innovation, organisational IT", url:"https://www.tandfonline.com/toc/tejis20/current", category:"AIS Affiliated", importance:5 },
+      { name:"Journal of Business Analytics", focus:"Business analytics, data-driven decision making", url:"https://www.tandfonline.com/toc/tjba21/current", category:"AIS Affiliated", importance:4 },
+      { name:"International Journal of Information Management", focus:"IS management, information strategy, digital transformation", url:"https://www.sciencedirect.com/journal/international-journal-of-information-management", category:"Independent", importance:4 },
+      { name:"Information Technology & People", focus:"IT and organisational behaviour, user perspectives", url:"https://www.emerald.com/insight/publication/issn/0959-3845", category:"Independent", importance:3 },
+      { name:"Journal of Strategic Information Systems", focus:"Strategic IT, digital transformation strategy", url:"https://www.sciencedirect.com/journal/the-journal-of-strategic-information-systems", category:"AIS Affiliated", importance:5 },
+      { name:"Journal of Information Systems Education", focus:"IS curriculum, teaching methods, pedagogy", url:"https://jise.org/", category:"AIS Affiliated", importance:3 },
+      { name:"Information & Management", focus:"IS management, IT impact on organisations", url:"https://www.sciencedirect.com/journal/information-and-management", category:"Independent", importance:4 },
+      { name:"Decision Support Systems", focus:"Decision support, AI in business, analytical systems", url:"https://www.sciencedirect.com/journal/decision-support-systems", category:"Independent", importance:4 },
+      { name:"Information Systems Journal", focus:"IS development, implementation, use and management", url:"https://onlinelibrary.wiley.com/journal/13652575", category:"AIS Affiliated", importance:5 }
+    ]
+  },
+  "Professional Orgs": {
+    icon: "fas fa-building",
+    color: "purple",
+    columns: ["#", "Organisation", "Coverage Areas", "Importance", "URL"],
+    colKeys: ["num","name","coverage","importance","url"],
+    filters: ["All"],
+    data: [
+      { name:"Association for Information Systems (AIS)", coverage:"Information Systems, Business IT, Digitalisation, IT management, Systems analysis, Enterprise systems, Digital transformation, Business analytics, AI and IS, IS research", importance:5, url:"https://aisnet.org/" },
+      { name:"The Open Group", coverage:"TOGAF, Enterprise Architecture, Business Architecture, Information Architecture, Application Architecture, Technology Architecture", importance:4, url:"https://www.opengroup.org/" }
+    ]
+  },
+  "Reference Sources": {
+    icon: "fas fa-book",
+    color: "blue",
+    columns: ["#", "Source", "Type", "Best For", "Notes", "URL"],
+    colKeys: ["num","name","type","bestFor","notes","url"],
+    filters: ["All","Encyclopedia","Academic Reference","Starting Point"],
+    data: [
+      { name:"Encyclopaedia Britannica", type:"Encyclopedia", bestFor:"Information technology, computers, management, economics, organisations, business concepts", notes:"Use for foundational definitions before diving into papers", url:"https://www.britannica.com/", category:"Encyclopedia" },
+      { name:"SpringerLink Reference Works", type:"Academic Reference", bestFor:"Information Systems, Business IS, Enterprise Architecture, Digital transformation, BPM, Information management", notes:"Advanced academic definitions and comprehensive reference works", url:"https://link.springer.com/", category:"Academic Reference" },
+      { name:"Wikipedia", type:"Starting Point", bestFor:"Discovering terminology, finding initial references, broad overviews", notes:"Do NOT use as a primary academic source. Use its references to locate original books, journals and organisations.", url:"https://www.wikipedia.org/", category:"Starting Point" }
+    ]
+  },
+  "Websites & Blogs": {
+    icon: "fas fa-globe",
+    color: "accent",
+    columns: ["#", "Website", "Publisher", "Best For", "URL"],
+    colKeys: ["num","name","publisher","bestFor","url"],
+    filters: ["All","Academic","Consulting","Industry","Technical"],
+    data: [
+      { name:"MIT Sloan Management Review", publisher:"MIT Sloan", bestFor:"Digital transformation, technology strategy, AI, IT leadership, organisational transformation", url:"https://sloanreview.mit.edu/", category:"Academic" },
+      { name:"Harvard Business Review", publisher:"Harvard Business Publishing", bestFor:"Business strategy + technology + management — understanding the business side of IT", url:"https://hbr.org/", category:"Academic" },
+      { name:"McKinsey Digital", publisher:"McKinsey & Company", bestFor:"Digital transformation, enterprise technology, AI, technology strategy, operating models, business transformation", url:"https://www.mckinsey.com/capabilities/mckinsey-digital", category:"Consulting" },
+      { name:"Deloitte Insights — Technology", publisher:"Deloitte", bestFor:"Enterprise technology, CIO strategy, digital transformation, AI, technology operating models, business transformation", url:"https://www.deloitte.com/us/en/insights.html", category:"Consulting" },
+      { name:"Gartner", publisher:"Gartner Inc.", bestFor:"Enterprise IT, CIO research, technology strategy, enterprise architecture, digital transformation, IT operating models", url:"https://www.gartner.com/", category:"Industry", notes:"Premium research requires subscription; public material still useful" },
+      { name:"CIO", publisher:"Foundry (IDG)", bestFor:"IT management at executive level — CIO, IT strategy, enterprise systems, digital transformation, cloud, cybersecurity, AI, IT governance", url:"https://www.cio.com/", category:"Industry" },
+      { name:"TechTarget", publisher:"TechTarget", bestFor:"Technical and business terminology — ERP, CRM, MIS, DSS, BPM, APIs, enterprise architecture, cloud computing, data governance", url:"https://www.techtarget.com/", category:"Technical" }
+    ]
+  },
+  "Enterprise Systems": {
+    icon: "fas fa-cogs",
+    color: "orange",
+    columns: ["#", "Vendor / Platform", "Key Products", "Study Topics", "URL"],
+    colKeys: ["num","name","products","topics","url"],
+    filters: ["All","ERP","CRM","BPM"],
+    data: [
+      { name:"BPM.com", products:"BPM community resources", topics:"Business processes, process automation, process modelling, process improvement, workflow, BPM", url:"https://www.bpm.com/", category:"BPM" },
+      { name:"SAP", products:"SAP S/4HANA, SAP CRM, SAP Ariba, SAP SuccessFactors", topics:"ERP, CRM, Supply chain, Finance systems, Human capital management, Business process integration", url:"https://www.sap.com/", category:"ERP" },
+      { name:"Microsoft (Dynamics 365)", products:"Dynamics 365, Power Platform, Power BI", topics:"CRM, ERP, Business applications, Power Platform, Business intelligence, Process automation", url:"https://www.microsoft.com/en-us/dynamics-365", category:"ERP" },
+      { name:"Salesforce", products:"Sales Cloud, Service Cloud, Platform, Einstein AI", topics:"CRM, customer 360, AI in business, platform ecosystem, low-code development", url:"https://www.salesforce.com/", category:"CRM" },
+      { name:"Oracle", products:"Oracle Fusion Cloud, Oracle NetSuite, Oracle CX", topics:"ERP, Cloud infrastructure, Database systems, Enterprise applications", url:"https://www.oracle.com/", category:"ERP" },
+      { name:"ServiceNow", products:"ITSM, ITOM, CSM, HR Service Delivery", topics:"IT service management, IT operations, workflow automation, enterprise service management", url:"https://www.servicenow.com/", category:"BPM" }
+    ]
+  },
+  "Enterprise Architecture": {
+    icon: "fas fa-sitemap",
+    color: "red",
+    columns: ["#", "Framework / Source", "Focus Areas", "Career Relevance", "URL"],
+    colKeys: ["num","name","focus","career","url"],
+    filters: ["All"],
+    data: [
+      { name:"TOGAF (via The Open Group)", focus:"Enterprise Architecture, Business Architecture, Information Architecture, Application Architecture, Technology Architecture", career:"Enterprise Architect, IT Director, CIO, Digital Transformation Manager", url:"https://www.opengroup.org/togaf" },
+      { name:"Zachman Framework", focus:"Enterprise architecture ontology — interrogative classification (What, How, Where, Who, When, Why)", career:"Enterprise Architect, Business Architect", url:"https://www.zachman.com/" },
+      { name:"FEAF (Federal Enterprise Architecture Framework)", focus:"US federal enterprise architecture — segments, reference models", career:"Enterprise Architect (government/defence)", url:"https://www.cio.gov/" },
+      { name:"BIZBOK Guide (Business Architecture Guild)", focus:"Business architecture, capability mapping, value streams, organisational mapping", career:"Business Architect, Enterprise Architect", url:"https://www.businessarchitectureguild.org/" }
+    ]
+  },
+  "Systems Analysis": {
+    icon: "fas fa-project-diagram",
+    color: "blue",
+    columns: ["#", "Topic / Technique", "Category", "Description"],
+    colKeys: ["num","name","category","description"],
+    filters: ["All","Modelling","Requirements","Methodology"],
+    data: [
+      { name:"Systems Analysis and Design", category:"Methodology", description:"Core discipline for analysing business problems and designing IT solutions" },
+      { name:"Requirements Engineering", category:"Requirements", description:"Eliciting, documenting, validating and managing system requirements" },
+      { name:"UML", category:"Modelling", description:"Unified Modelling Language — standard for visualising system design (class, sequence, use case diagrams)" },
+      { name:"Business Requirements", category:"Requirements", description:"High-level requirements describing what the business needs from a system" },
+      { name:"Functional Requirements", category:"Requirements", description:"Specific functions the system must perform — what it does" },
+      { name:"Non-functional Requirements", category:"Requirements", description:"Quality attributes — performance, security, usability, reliability, scalability" },
+      { name:"Use Cases", category:"Modelling", description:"Describing interactions between actors and the system to achieve goals" },
+      { name:"Process Modelling", category:"Modelling", description:"Representing business processes using notation (BPMN, activity diagrams)" },
+      { name:"Data Flow Diagrams (DFD)", category:"Modelling", description:"Showing how data flows through a system — processes, data stores, external entities" },
+      { name:"Entity Relationship Diagrams (ERD)", category:"Modelling", description:"Modelling data entities, attributes and relationships for database design" },
+      { name:"Agile Systems Development", category:"Methodology", description:"Iterative, incremental approach to systems development (Scrum, Kanban)" },
+      { name:"Software Development Life Cycle (SDLC)", category:"Methodology", description:"Phases of system development — planning, analysis, design, implementation, testing, maintenance" },
+      { name:"Business Process Modelling", category:"Modelling", description:"Using BPMN and other notations to model, analyse and improve business processes" }
+    ]
+  },
+  "Conferences": {
+    icon: "fas fa-users",
+    color: "purple",
+    columns: ["#", "Conference", "Abbreviation", "Focus", "Region", "URL"],
+    colKeys: ["num","name","abbr","focus","region","url"],
+    filters: ["All","Global","Americas","Europe","Asia-Pacific"],
+    data: [
+      { name:"International Conference on Information Systems", abbr:"ICIS", focus:"International Information Systems research — the premier IS conference", region:"Global", url:"https://icis.aisnet.org/", category:"Global" },
+      { name:"Americas Conference on Information Systems", abbr:"AMCIS", focus:"Americas Information Systems research", region:"Americas", url:"https://amcis.aisnet.org/", category:"Americas" },
+      { name:"European Conference on Information Systems", abbr:"ECIS", focus:"European Information Systems research", region:"Europe", url:"https://ecis.aisnet.org/", category:"Europe" },
+      { name:"Pacific Asia Conference on Information Systems", abbr:"PACIS", focus:"Pacific Asia Information Systems", region:"Asia-Pacific", url:"https://pacis.aisnet.org/", category:"Asia-Pacific" },
+      { name:"Hawaii International Conference on System Sciences", abbr:"HICSS", focus:"Information systems, technology and digital transformation", region:"Global", url:"https://hicss.hawaii.edu/", category:"Global" }
+    ]
+  },
+  "Research Stack": {
+    icon: "fas fa-layer-group",
+    color: "accent",
+    columns: ["#", "Level", "Goal", "Resources", "Priority"],
+    colKeys: ["num","level","goal","resources","priority"],
+    filters: ["All","Foundation","Academic","Application","Specialisation"],
+    data: [
+      { level:"Level 1 — Definitions & Fundamentals", goal:"Understand terminology", resources:"Britannica, Wikipedia, TechTarget, university textbooks", priority:1, category:"Foundation" },
+      { level:"Level 2 — University Research", goal:"Find academic evidence", resources:"Google Scholar, AIS eLibrary, JSTOR, ScienceDirect, SpringerLink, Emerald, IEEE Xplore, ACM Digital Library", priority:2, category:"Academic" },
+      { level:"Level 3 — Core IS Journals", goal:"Understand the academic discipline of Information Systems", resources:"MIS Quarterly, ISR, JAIS, EJIS, ISJ, JSIS, JIT", priority:3, category:"Academic" },
+      { level:"Level 4 — Business Application", goal:"Understand how technology creates business value", resources:"HBR, MIT Sloan Management Review, McKinsey Digital, Deloitte Insights, Gartner, CIO", priority:4, category:"Application" },
+      { level:"Level 5 — Enterprise Systems", goal:"Understand the actual systems organisations use", resources:"SAP, Microsoft Dynamics, Salesforce, Oracle, ServiceNow", priority:5, category:"Application" },
+      { level:"Level 6 — Architecture & Transformation", goal:"Progress from IT practitioner to business systems professional to technology/IT management", resources:"The Open Group / TOGAF, Enterprise Architecture, Digital Transformation, IT Governance, IT Service Management, Business Architecture, Data Architecture", priority:6, category:"Specialisation" }
+    ]
+  },
+  "Top 15 Bookmarks": {
+    icon: "fas fa-star",
+    color: "yellow",
+    columns: ["#", "Resource", "Type", "Why It's Essential", "URL"],
+    colKeys: ["num","name","type","why","url"],
+    filters: ["All","Academic","Journal","Industry","Reference"],
+    data: [
+      { name:"Association for Information Systems", type:"Academic", why:"Single most important professional organisation for Business Systems/IS studies", url:"https://aisnet.org/", category:"Academic" },
+      { name:"AIS eLibrary", type:"Academic", why:"Primary research database — 60,000+ articles, journals, conference proceedings", url:"https://aisel.aisnet.org/", category:"Academic" },
+      { name:"MIS Quarterly", type:"Journal", why:"Premier IS journal — IT services, resource management, organisational/societal IT impact", url:"https://aisel.aisnet.org/misq/", category:"Journal" },
+      { name:"Google Scholar", type:"Academic", why:"Universal academic search — find papers, theses, books across all sources", url:"https://scholar.google.com/", category:"Academic" },
+      { name:"JSTOR", type:"Academic", why:"Business, management, economics and historical IS research archive", url:"https://www.jstor.org/", category:"Academic" },
+      { name:"ScienceDirect", type:"Academic", why:"Major database for IS, business and technology research", url:"https://www.sciencedirect.com/", category:"Academic" },
+      { name:"SpringerLink", type:"Academic", why:"Business systems, enterprise systems, IT reference works", url:"https://link.springer.com/", category:"Academic" },
+      { name:"IEEE Xplore", type:"Academic", why:"IT systems, software, enterprise architecture — technical depth", url:"https://ieeexplore.ieee.org/", category:"Academic" },
+      { name:"ACM Digital Library", type:"Academic", why:"Software, IS, databases, HCI — computing research", url:"https://dl.acm.org/", category:"Academic" },
+      { name:"Harvard Business Review", type:"Industry", why:"Business strategy + technology + management — the business side of IT", url:"https://hbr.org/", category:"Industry" },
+      { name:"MIT Sloan Management Review", type:"Industry", why:"Digital transformation, technology strategy, AI, IT leadership", url:"https://sloanreview.mit.edu/", category:"Industry" },
+      { name:"McKinsey Digital", type:"Industry", why:"Digital transformation, enterprise technology, AI, operating models", url:"https://www.mckinsey.com/capabilities/mckinsey-digital", category:"Industry" },
+      { name:"Gartner", type:"Industry", why:"Enterprise IT, CIO research, technology strategy, enterprise architecture", url:"https://www.gartner.com/", category:"Industry" },
+      { name:"TechTarget", type:"Reference", why:"Technical and business terminology — ERP, CRM, MIS, DSS, BPM, APIs", url:"https://www.techtarget.com/", category:"Reference" },
+      { name:"The Open Group", type:"Reference", why:"TOGAF, Enterprise Architecture — essential for senior IT management path", url:"https://www.opengroup.org/", category:"Reference" }
+    ]
+  }
+};
+
+// ========== STATE ==========
+let currentSheet = Object.keys(sheets)[0];
+let currentFilter = "All";
+let searchTerm = "";
+let sortCol = null;
+let sortAsc = true;
+
+// ========== RENDER ==========
+function renderStats() {
+  const bar = document.getElementById('statsBar');
+  const totalResources = Object.values(sheets).reduce((s,sh) => s + sh.data.length, 0);
+  const totalSheets = Object.keys(sheets).length;
+  const totalUrls = Object.values(sheets).reduce((s,sh) => s + sh.data.filter(r => r.url).length, 0);
+  bar.innerHTML = `
+    <div class="stat-chip"><i class="fas fa-table" style="color:var(--accent)"></i><span class="num">${totalSheets}</span> Sheets</div>
+    <div class="stat-chip"><i class="fas fa-link" style="color:var(--orange)"></i><span class="num">${totalResources}</span> Resources</div>
+    <div class="stat-chip"><i class="fas fa-external-link-alt" style="color:var(--blue)"></i><span class="num">${totalUrls}</span> Links</div>
+  `;
+}
+
+function renderTabs() {
+  const container = document.getElementById('tabsContainer');
+  container.innerHTML = '';
+  Object.keys(sheets).forEach(key => {
+    const sh = sheets[key];
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (key === currentSheet ? ' active' : '');
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', key === currentSheet);
+    btn.innerHTML = `${key}<span class="tab-count">${sh.data.length}</span>`;
+    btn.onclick = () => switchSheet(key);
+    container.appendChild(btn);
+  });
+}
+
+function renderFilters() {
+  const group = document.getElementById('filterGroup');
+  const sh = sheets[currentSheet];
+  group.innerHTML = '';
+  (sh.filters || ["All"]).forEach(f => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (f === currentFilter ? ' active' : '');
+    btn.textContent = f;
+    btn.onclick = () => { currentFilter = f; render(); };
+    group.appendChild(btn);
+  });
+}
+
+function renderTable() {
+  const sh = sheets[currentSheet];
+  const thead = document.getElementById('tableHead');
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+
+  // Header
+  thead.innerHTML = '<tr>' + sh.columns.map((col, i) => {
+    const key = sh.colKeys[i];
+    const isSorted = sortCol === key;
+    const icon = isSorted ? (sortAsc ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort';
+    return `<th class="${isSorted ? 'sorted' : ''}" onclick="doSort('${key}')">${col} <i class="fas ${icon} sort-icon"></i></th>`;
+  }).join('') + '</tr>';
+
+  // Filter data
+  let rows = sh.data.map((d, i) => ({ ...d, _idx: i }));
+  if (currentFilter !== "All") {
+    rows = rows.filter(r => r.category === currentFilter);
+  }
+  if (searchTerm) {
+    const term = searchTerm.toLowerCase();
+    rows = rows.filter(r => {
+      return Object.values(r).some(v => typeof v === 'string' && v.toLowerCase().includes(term));
+    });
+  }
+
+  // Sort
+  if (sortCol) {
+    rows.sort((a, b) => {
+      let va = a[sortCol], vb = b[sortCol];
+      if (sortCol === 'num') { va = a._idx + 1; vb = b._idx + 1; }
+      if (typeof va === 'number' && typeof vb === 'number') return sortAsc ? va - vb : vb - va;
+      va = String(va || '').toLowerCase(); vb = String(vb || '').toLowerCase();
+      return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+  }
+
+  // Body
+  if (rows.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = rows.map(r => {
+      return '<tr>' + sh.colKeys.map(key => {
+        if (key === 'num') return `<td class="row-num">${r._idx + 1}</td>`;
+        if (key === 'url') {
+          return r.url ? `<td><a class="cell-link" href="${r.url}" target="_blank" rel="noopener">${truncateUrl(r.url)} <i class="fas fa-external-link-alt"></i></a></td>` : '<td>—</td>';
+        }
+        if (key === 'name') return `<td class="cell-name">${r[key] || ''}</td>`;
+        if (key === 'importance') return `<td>${renderStars(r[key])}</td>`;
+        if (key === 'priority') return `<td>${renderLevel(r[key], 6)}</td>`;
+        if (key === 'type' || key === 'category') return `<td>${renderBadge(r[key] || '', sh.color)}</td>`;
+        if (key === 'notes') return `<td class="cell-notes" style="color:var(--fg3);font-style:italic;font-size:12px;">${r[key] || ''}</td>`;
+        return `<td>${r[key] || ''}</td>`;
+      }).join('') + '</tr>';
+    }).join('');
+  }
+
+  // Footer
+  document.getElementById('footerInfo').textContent = `Showing ${rows.length} of ${sh.data.length} resources — ${currentSheet}`;
+}
+
+function render() {
+  renderTabs();
+  renderFilters();
+  renderTable();
+}
+
+// ========== HELPERS ==========
+function truncateUrl(url) {
+  try {
+    const u = new URL(url);
+    return u.hostname + (u.pathname.length > 1 && u.pathname !== '/' ? u.pathname : '');
+  } catch { return url; }
+}
+
+function renderStars(n) {
+  if (!n) return '—';
+  let s = '';
+  for (let i = 0; i < 5; i++) s += `<i class="fa${i < n ? 's' : 'r'} fa-star"></i>`;
+  return `<span class="stars">${s}</span>`;
+}
+
+function renderLevel(n, max) {
+  let s = '<span class="level-bar">';
+  for (let i = 1; i <= max; i++) s += `<span class="level-seg${i <= n ? ' filled' : ''}"></span>`;
+  s += `</span><span style="margin-left:8px;font-size:12px;color:var(--fg3);">${n}/${max}</span>`;
+  return s;
+}
+
+function renderBadge(text, baseColor) {
+  const colors = {
+    accent: 'badge-accent', orange: 'badge-orange', red: 'badge-red',
+    blue: 'badge-blue', purple: 'badge-purple', yellow: 'badge-yellow'
+  };
+  // Cycle through badge colors based on text hash
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) hash = text.charCodeAt(i) + ((hash << 5) - hash);
+  const keys = Object.keys(colors);
+  const cls = colors[keys[Math.abs(hash) % keys.length]];
+  return `<span class="badge ${cls}">${text}</span>`;
+}
+
+// ========== ACTIONS ==========
+function switchSheet(key) {
+  currentSheet = key;
+  currentFilter = "All";
+  searchTerm = "";
+  sortCol = null;
+  sortAsc = true;
+  document.getElementById('searchInput').value = '';
+  render();
+}
+
+function doSort(key) {
+  if (sortCol === key) {
+    if (sortAsc) sortAsc = false;
+    else { sortCol = null; sortAsc = true; }
+  } else {
+    sortCol = key;
+    sortAsc = true;
+  }
+  renderTable();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+function escapeCSV(val) {
+  if (!val) return '';
+  val = String(val);
+  if (val.includes(',') || val.includes('"') || val.includes('\n')) {
+    return '"' + val.replace(/"/g, '""') + '"';
+  }
+  return val;
+}
+
+function exportCSV() {
+  let csv = '';
+  Object.keys(sheets).forEach(sheetName => {
+    const sh = sheets[sheetName];
+    csv += '\n=== ' + sheetName + ' ===\n';
+    csv += sh.columns.join(',') + '\n';
+    sh.data.forEach((row, i) => {
+      csv += sh.colKeys.map(key => {
+        if (key === 'num') return i + 1;
+        return escapeCSV(row[key]);
+      }).join(',') + '\n';
+    });
+  });
+  downloadFile(csv, 'business_systems_research_hub.csv', 'text/csv');
+  showToast('Full database exported as CSV');
+}
+
+function exportCurrentSheet() {
+  const sh = sheets[currentSheet];
+  let csv = sh.columns.join(',') + '\n';
+  sh.data.forEach((row, i) => {
+    csv += sh.colKeys.map(key => {
+      if (key === 'num') return i + 1;
+      return escapeCSV(row[key]);
+    }).join(',') + '\n';
+  });
+  downloadFile(csv, `${currentSheet.replace(/\s+/g, '_')}.csv`, 'text/csv');
+  showToast(`"${currentSheet}" exported as CSV`);
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob(['\uFEFF' + content], { type: type + ';charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ========== SEARCH ==========
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  searchTerm = e.target.value.trim();
+  renderTable();
+});
+
+// ========== KEYBOARD NAV ==========
+document.addEventListener('keydown', function(e) {
+  if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+  if (e.key === 'Escape') {
+    document.getElementById('searchInput').blur();
+  }
+});
+
+// ========== INIT ==========
+renderStats();
+render();
+</script>
+</body>
+</html>
